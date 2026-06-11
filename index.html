@@ -1286,24 +1286,22 @@ async function sendMessageToLumi(userText) {
   const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
   
   const recentContext = getLumiContext();
-  const systemPrompt = `You are LUMI, a warm, empathetic, and highly human-like AI companion for stress management and daily chatting.
+  const systemPrompt = `You are LUMI, a warm, empathetic, and highly human-like AI companion for stress management and daily chatting within the 'Mind Vault' app.
   The user is named ${profile?.name || 'Friend'}.
   
   CRITICAL REAL-TIME USER DATA FOR ANALYSIS:
   ${recentContext}
   
   INSTRUCTIONS FOR YOUR RESPONSE:
-  1. Act like a true human friend. If the user asks casual questions ("How are you?", "What are you doing?"), answer naturally and casually without immediately pushing stress-management advice (e.g., "I'm doing wonderfully, just maintaining this quiet space for you. How is your day going?").
-  2. DO NOT force motivation. If the user seems stressed or asks for motivation, ask them FIRST if they would like a real-life motivational quote or just a gentle pep talk from you. Let the conversation flow naturally.
-  3. Keep your messages SHORT, SWEET, AND CONCISE (maximum 2-3 sentences). Avoid large blocks of text unless heavily requested.
-  4. Vary your sentence structures. Do not sound repetitive or robotic. Don't always use the exact same intro or outro.
-  5. Use markdown formatting (**bolding**) gently to emphasize key concepts or names.
+  1. Act naturally and conversationally. If the user greets you ("hey", "how are you?", "what's up"), greet them back warmly as a friend. DO NOT mention their stats, streaks, or progress unless they explicitly ask for an analysis or progress update.
+  2. Directly fulfill requests. If the user asks for advice, give them a practical, thoughtful piece of advice immediately. If they ask for motivation, provide a short, strong motivation based on a REAL historical incident or a real person's true story of overcoming struggles (e.g., J.K. Rowling's rejections, Michael Jordan being cut from his team). Do NOT just give generic quotes or ask for permission. Just provide the story naturally.
+  3. Keep your messages SHORT, SWEET, AND CONCISE (maximum 2-3 sentences).
+  4. Vary your sentence structures and content. Do not sound repetitive or robotic. Provide different advice/motivation each time.
+  5. Use markdown formatting (**bolding**) gently to emphasize key concepts.
   6. CRITICAL: MOOD LOGGING
-     Analyze the user's message. If they express a clear emotion (e.g., 'I feel sad', 'I am so stressed', 'feeling great today'), you MUST log it.
-     To log a feeling, append exactly this string at the VERY END of your response text:
+     If the user expresses a clear emotion (e.g., 'I feel sad', 'I am so stressed', 'feeling great today'), append exactly this string at the VERY END of your response text:
      [LOG_MOOD: mood_name]
-     Where 'mood_name' MUST be exactly one of these: happy, excited, calm, grateful, neutral, depressed, anxious, stressed, overwhelmed, frustrated, lonely, tired.
-     Only include this hidden tag if the user directly states a clear mood.`;
+     Where 'mood_name' MUST be exactly one of these: happy, excited, calm, grateful, neutral, depressed, anxious, stressed, overwhelmed, frustrated, lonely, tired.`;
   
   // Package Chat History for Context (Merge sequential messages of the same role to prevent API error)
   let apiHistory = [];
@@ -1351,7 +1349,7 @@ async function sendMessageToLumi(userText) {
 }
 
 function getLumiFallbackResponse(text) {
-  const query = text.toLowerCase();
+  const query = text.toLowerCase().trim();
   const name = profile?.name || 'Friend';
   const lastEntry = entries[entries.length - 1];
   const lastMood = lastEntry ? lastEntry.mood : null;
@@ -1359,58 +1357,93 @@ function getLumiFallbackResponse(text) {
   const moodEmoji = lastMood ? (moodInfo[lastMood]?.emoji || '💭') : '';
   const streak = calcStreak();
 
-  // Casual Conversations
-  if (query === 'hi' || query === 'hello' || query === 'hey' || query.includes('hi lumi')) {
-    return `Hey there, **${name}**! I'm so glad you dropped by. How is your day going so far?`;
+  // Greetings
+  if (/^(hi|hello|hey|hey there|greetings|morning|evening|afternoon)/.test(query) || query.includes('hi lumi')) {
+    const greetings = [
+      `Hey there, **${name}**! It's so nice to see you. How is your day treating you so far?`,
+      `Hi **${name}**! I'm here and ready to listen. What's on your mind today?`,
+      `Hello! It's great to connect with you. How are you feeling right now?`
+    ];
+    return greetings[Math.floor(Math.random() * greetings.length)];
   }
-  if (query.includes('how are you') || query.includes('how are u')) {
-    return `I'm doing wonderfully, thank you for asking! Just keeping this quiet space warm and ready for you. How are you feeling right now?`;
+  
+  // Casual / Identity
+  if (query.includes('how are you') || query.includes('how are u') || query.includes('how\'s it going') || query.includes('hows it going')) {
+    const statuses = [
+      `I'm doing wonderfully, thank you for asking! I'm just here in the Mind Vault, ready to support you. How are you feeling?`,
+      `I'm great! Always happy to chat with you, **${name}**. What's up?`,
+      `Doing well and feeling peaceful. How is everything on your end?`
+    ];
+    return statuses[Math.floor(Math.random() * statuses.length)];
   }
   if (query.includes('what are you doing') || query.includes('what are u doing')) {
-    return `Just organizing some digital thoughts and enjoying the calm atmosphere here. What's on your mind today, **${name}**?`;
+    return `Just organizing some digital thoughts and enjoying the peaceful atmosphere here. What's on your mind today, **${name}**?`;
   }
-  if (query.includes('motivate') || query.includes('motivation')) {
-    return `I would love to help lift your spirits! Would you like to hear a verified quote from someone inspiring, or just a little pep talk from me?`;
+  if (query.includes('who are you')) {
+    return `I'm Lumi, your personal AI companion! I'm here to listen, offer advice, or just chat whenever you need a friendly space.`;
+  }
+  
+  // Advice
+  if (query.includes('advice') || query.includes('tip') || query.includes('help me') || query.includes('guide')) {
+    const advices = [
+      "When things feel heavy, try focusing on just the very next step. Don't worry about the whole staircase.",
+      "Remember that it's completely okay to say 'no' to things that drain your energy. Protect your peace.",
+      "Sometimes the best advice is just to step away for 5 minutes, drink some water, and breathe. You'll return with a clearer head.",
+      "Treat yourself with the same kindness you'd offer a good friend. You deserve that grace.",
+      "If a task feels too big, break it down into a 5-minute micro-task. Getting started is usually the hardest part."
+    ];
+    return advices[Math.floor(Math.random() * advices.length)];
+  }
+
+  // Motivation
+  if (query.includes('motivat') || query.includes('inspire') || query.includes('encourage') || query.includes('boost')) {
+    const motivations = [
+      "When J.K. Rowling was writing Harry Potter, she was rejected by 12 different publishers while struggling as a single mother. Keep pushing forward, **" + name + "**; your breakthrough might be just around the corner.",
+      "Michael Jordan was famously cut from his high school varsity basketball team. He used that rejection as fuel to become the greatest. Use today's heavy moments to build your future strength.",
+      "Walt Disney was once fired from a newspaper because he 'lacked imagination and had no good ideas.' Remember that someone else's inability to see your worth doesn't define your potential.",
+      "Thomas Edison made 1,000 unsuccessful attempts at inventing the light bulb, calling them 'steps' instead of failures. Whatever you are facing right now is just a stepping stone, **" + name + "**.",
+      "Stephen King's first novel, Carrie, was rejected 30 times, and he even threw it in the trash before his wife rescued it. Don't throw away your efforts; keep believing in yourself!"
+    ];
+    return motivations[Math.floor(Math.random() * motivations.length)];
   }
 
   // Active Mood Keywords
-  let intro = "";
-  if (moodLabel && !query.includes('how are') && !query.includes('what are')) {
-    intro = `Since you recently logged feeling **${moodLabel}** ${moodEmoji}, `;
-  }
-
   if (query.includes('anxious') || query.includes('panic') || query.includes('scared') || query.includes('worry')) {
-    return `${intro}let's take a deep breath together. Try our **Breathe tab** (4-7-8 mode) to settle your nervous system immediately. You are safe here. [LOG_MOOD: anxious]`;
+    return `Take a slow, deep breath with me, **${name}**. Try our **Breathe tab** (4-7-8 mode) to settle your nervous system. You are safe here. [LOG_MOOD: anxious]`;
   }
   if (query.includes('sad') || query.includes('depressed') || query.includes('lonely') || query.includes('hurt')) {
-    return `${intro}I'm here with you in this heavy moment. Be incredibly gentle with yourself. Can you do one tiny, loving thing for yourself today? [LOG_MOOD: depressed]`;
+    return `I'm here with you in this heavy moment. Be incredibly gentle with yourself. Can you do one tiny, loving thing for yourself today? [LOG_MOOD: depressed]`;
   }
   if (query.includes('stressed') || query.includes('overwhelmed') || query.includes('busy')) {
-    return `${intro}it sounds like your plate is overflowing. Focus on just **one small thing**. Try a brief Pomodoro session under our **Focus** tab to ground your attention. [LOG_MOOD: stressed]`;
+    return `It sounds like your plate is overflowing. Focus on just **one small thing**. Try a brief Pomodoro session under our **Focus** tab to ground your attention. [LOG_MOOD: stressed]`;
   }
   if (query.includes('happy') || query.includes('excited') || query.includes('great') || query.includes('good')) {
     return `That is wonderful to hear, **${name}**! Take a moment to truly soak in this good energy. [LOG_MOOD: happy]`;
   }
   
-  if (query.includes('progress') || query.includes('stats') || query.includes('analyze')) {
+  // Progress
+  if (query.includes('progress') || query.includes('stats') || query.includes('analyze') || query.includes('my data')) {
     const focusToday = focusSessions.filter(s => s.completed).length;
     return `Your mindful summary is looking strong, **${name}**! You have **${entries.length} total logs**, a active **${streak}-day streak**, and **${focusToday} focus sessions** under your belt. Keep going!`;
   }
 
+  // App Help
   if (query.includes('app') || query.includes('mind vault') || query.includes('help')) {
     return `I can help you navigate Mind Vault! Use **Log** to record feelings, **Breathe** to calm down biologically, **Focus** to run study intervals, and **Stats** to view your emotional patterns.`;
   }
   
-  if (moodLabel && (DIFFICULT_MOODS.includes(lastMood) || lastMood === 'tired')) {
-    return `${intro}I want to remind you that your limits represent security, not failure. Give yourself permission to do less today. I am right here.`;
+  // Contextual prompt if no other matches but a recent mood was bad
+  if (moodLabel && (DIFFICULT_MOODS.includes(lastMood) || lastMood === 'tired') && Math.random() > 0.5) {
+    return `I remember you recently logged feeling **${moodLabel}**. I just want to remind you that your limits represent security, not failure. Give yourself permission to do less today. I am right here.`;
   }
   
   // Dynamic random fallback for unknown queries
   const casualResponses = [
-    `I'm always here to listen, **${name}**. Tell me more about what's on your mind.`,
-    `That's interesting! How does that make you feel?`,
-    `I'm completely ears. Would you like some advice on that, or do you just want to vent?`,
-    `I understand. Take your time, I'm right here with you.`
+    `I hear you, **${name}**. Tell me a little more about that.`,
+    `That makes a lot of sense. How is it making you feel overall?`,
+    `I'm completely listening. Feel free to vent or share as much as you need.`,
+    `Thank you for sharing that with me. I'm right here with you.`,
+    `That's really interesting. What do you think you'll do next?`
   ];
   return casualResponses[Math.floor(Math.random() * casualResponses.length)];
 }
