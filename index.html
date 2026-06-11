@@ -84,6 +84,8 @@
     .cd-neutral { background: linear-gradient(135deg, #94a3b8, #64748b); color: white; box-shadow: 0 4px 12px rgba(100, 116, 139, 0.25); }
     .cd-stressed { background: linear-gradient(135deg, #f87171, #e11d48); color: white; box-shadow: 0 4px 12px rgba(225, 29, 72, 0.25); }
     .cd-tired { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25); }
+    .cd-yellow { background: linear-gradient(135deg, #fde047, #eab308); color: #713f12; box-shadow: 0 4px 12px rgba(234, 179, 8, 0.25); }
+    .cd-orange { background: linear-gradient(135deg, #fb923c, #ea580c); color: white; box-shadow: 0 4px 12px rgba(234, 88, 12, 0.25); }
 
     /* Custom Scrollbar */
     ::-webkit-scrollbar { width: 6px; }
@@ -376,9 +378,14 @@
     <!-- TAB: REPORT/STATS -->
     <div class="section" id="tab-report">
       <div class="glass-panel shadow-premium dark:shadow-premium-dark rounded-3xl p-6 mb-6">
-        <h3 class="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-4 flex items-center gap-2">
-          <i data-lucide="trending-up" class="w-3.5 h-3.5 text-brand-500"></i> Weekly Analysis
-        </h3>
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 flex items-center gap-2">
+            <i data-lucide="trending-up" class="w-3.5 h-3.5 text-brand-500"></i> Weekly Analysis
+          </h3>
+          <button onclick="generateWeeklyInsight()" class="bg-brand-50 text-brand-600 border border-brand-200/50 dark:bg-brand-900/20 dark:border-brand-800/50 dark:text-brand-300 px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider hover:bg-brand-100 dark:hover:bg-brand-900/50 transition-all shadow-sm flex items-center gap-1.5">
+            ✨ AI Insight
+          </button>
+        </div>
         <div class="grid grid-cols-3 gap-3 mb-6">
           <div class="bg-white/40 dark:bg-slate-800/40 rounded-2xl p-4 text-center border border-white/50 dark:border-slate-700/30">
             <div class="text-2xl font-extrabold text-slate-800 dark:text-white" id="r-total">0</div>
@@ -410,9 +417,11 @@
         </h3>
         <div id="heatmap-wrap" class="mb-5"></div>
         <div class="flex flex-wrap justify-center gap-x-4 gap-y-2 text-[9px] font-bold text-slate-400 uppercase tracking-widest">
-          <span class="flex items-center gap-1.5"><div class="w-2.5 h-2.5 rounded-full bg-emerald-500"></div> Positive</span>
+          <span class="flex items-center gap-1.5"><div class="w-2.5 h-2.5 rounded-full bg-emerald-500"></div> Great</span>
+          <span class="flex items-center gap-1.5"><div class="w-2.5 h-2.5 rounded-full bg-yellow-400"></div> Good</span>
           <span class="flex items-center gap-1.5"><div class="w-2.5 h-2.5 rounded-full bg-slate-400"></div> Neutral</span>
-          <span class="flex items-center gap-1.5"><div class="w-2.5 h-2.5 rounded-full bg-rose-500"></div> Difficult</span>
+          <span class="flex items-center gap-1.5"><div class="w-2.5 h-2.5 rounded-full bg-orange-400"></div> Hard</span>
+          <span class="flex items-center gap-1.5"><div class="w-2.5 h-2.5 rounded-full bg-rose-500"></div> Stressed</span>
         </div>
       </div>
     </div>
@@ -433,10 +442,11 @@
         <div id="cal-grid" class="grid grid-cols-7 gap-2 mb-6"></div>
         
         <div class="flex flex-wrap justify-center gap-x-4 gap-y-2 text-[9px] font-bold text-slate-400 uppercase tracking-widest p-4 bg-slate-50/50 dark:bg-slate-900/20 rounded-2xl border border-slate-100 dark:border-slate-900/50">
-          <span class="flex items-center gap-1.5"><div class="w-2 h-2 rounded-full bg-emerald-400"></div> Positive</span>
+          <span class="flex items-center gap-1.5"><div class="w-2 h-2 rounded-full bg-emerald-500"></div> Great</span>
+          <span class="flex items-center gap-1.5"><div class="w-2 h-2 rounded-full bg-yellow-400"></div> Good</span>
           <span class="flex items-center gap-1.5"><div class="w-2 h-2 rounded-full bg-slate-400"></div> Neutral</span>
-          <span class="flex items-center gap-1.5"><div class="w-2 h-2 rounded-full bg-rose-400"></div> Difficult</span>
-          <span class="flex items-center gap-1.5"><div class="w-2 h-2 rounded-full bg-amber-400"></div> Tired</span>
+          <span class="flex items-center gap-1.5"><div class="w-2 h-2 rounded-full bg-orange-400"></div> Hard</span>
+          <span class="flex items-center gap-1.5"><div class="w-2 h-2 rounded-full bg-rose-500"></div> Stressed</span>
         </div>
       </div>
     </div>
@@ -1151,6 +1161,80 @@ function renderFocusSessions() {
   lucide.createIcons();
 }
 
+// ─── General AI Helpers & Features ─────────────────────────────
+
+async function generateGeminiText(userPrompt, sysPrompt) {
+  const apiKey = ""; // provided at runtime environment
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+  
+  const maxRetries = 5;
+  const delays = [1000, 2000, 4000, 8000, 16000];
+  
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: userPrompt }] }],
+          systemInstruction: { parts: [{ text: sysPrompt }] }
+        })
+      });
+      
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      const result = await response.json();
+      const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (text) return text;
+      throw new Error("Empty response from API");
+    } catch (error) {
+      if (attempt === maxRetries - 1) throw error;
+      await new Promise(resolve => setTimeout(resolve, delays[attempt]));
+    }
+  }
+}
+
+async function generateWeeklyInsight() {
+  const insightEl = document.getElementById('insight');
+  insightEl.innerHTML = '<span class="animate-pulse flex justify-center gap-2 text-brand-600 dark:text-brand-400 font-bold">✨ Lumi is analyzing your week...</span>';
+  
+  const statsContext = getLumiContext();
+  const sysPrompt = `You are Lumi, a compassionate and highly analytical mindfulness AI for the 'Mind Vault' app.`;
+  const prompt = `Based on the following user data:\n${statsContext}\n\nProvide a short, highly empathetic, and insightful 2-sentence summary of their week. Acknowledge their efforts, point out any emotional patterns or focus achievements, and offer a gentle piece of encouragement. Do NOT use markdown. Write normally.`;
+  
+  try {
+     const response = await generateGeminiText(prompt, sysPrompt);
+     insightEl.textContent = "✨ " + response;
+  } catch (e) {
+     insightEl.textContent = "✨ It seems Lumi is resting right now. Your data looks great though! Keep up the mindfulness journey.";
+  }
+}
+
+async function generatePersonalizedAffirmation() {
+  const quoteText = document.getElementById('quote-text');
+  const quoteAuthor = document.getElementById('quote-author');
+  
+  quoteText.textContent = "✨ Whispering to the universe...";
+  quoteText.classList.add("animate-pulse");
+  
+  const lastEntry = entries[entries.length - 1];
+  const moodStr = lastEntry ? (moodInfo[lastEntry.mood]?.label || 'neutral') : 'neutral';
+  
+  const sysPrompt = "You are Lumi, a mindfulness AI. Write ONE single, beautifully poetic, original affirmation/quote (max 15 words) perfectly tailored to the user's current mood. No quotes around it. No extra text.";
+  const prompt = `The user's latest logged feeling is: ${moodStr}. Generate a deeply comforting and poetic 1-sentence affirmation for them right now to use on their dashboard.`;
+  
+  try {
+    const response = await generateGeminiText(prompt, sysPrompt);
+    quoteText.classList.remove("animate-pulse");
+    quoteText.textContent = response.replace(/[""]/g, '');
+    quoteAuthor.textContent = "— Lumi AI";
+  } catch(e) {
+    quoteText.classList.remove("animate-pulse");
+    const idx = Math.floor(Math.random() * quotes.length);
+    quoteText.textContent = quotes[idx].text;
+    quoteAuthor.textContent = "— " + quotes[idx].author;
+  }
+}
+
 // ─── Lumi AI Companion Space Logic ─────────────────────────────
 function initLumiChat() {
   if (lumiMessages.length === 0) {
@@ -1169,7 +1253,7 @@ function renderLumiMessages() {
   const container = document.getElementById('lumi-chat-box');
   if (!container) return;
   
-  container.innerHTML = lumiMessages.map(m => {
+  container.innerHTML = lumiMessages.map((m, index) => {
     const isLumi = m.sender === 'lumi';
     const alignClass = isLumi ? 'justify-start' : 'justify-end';
     const bgClass = isLumi 
@@ -1177,6 +1261,15 @@ function renderLumiMessages() {
       : 'bg-brand-500/15 dark:bg-brand-500/10 text-brand-900 dark:text-brand-300 border border-brand-500/25 rounded-br-sm';
     
     const parsedText = parseMiniMarkdown(m.text);
+
+    let suggestionHtml = '';
+    if (isLumi && m.suggestedMood) {
+       if (m.moodLogged) {
+           suggestionHtml = `<div class="mt-3 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5"><i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i> Logged as ${moodInfo[m.suggestedMood].label}</div>`;
+       } else {
+           suggestionHtml = `<div class="mt-3"><button onclick="confirmAiLogMood(${index})" class="bg-white/80 text-brand-600 border border-brand-400 dark:bg-slate-900/50 dark:border-brand-500/50 dark:text-brand-400 px-4 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-wider hover:bg-brand-50 dark:hover:bg-brand-900/30 transition-all shadow-sm flex items-center gap-2 w-fit"><i data-lucide="plus-circle" class="w-3.5 h-3.5"></i> Log feeling as ${moodInfo[m.suggestedMood].label} ${moodInfo[m.suggestedMood].emoji}</button></div>`;
+       }
+    }
     
     return `<div class="flex w-full ${alignClass}">
       <div class="max-w-[85%] px-4 py-3 rounded-2xl shadow-sm text-xs leading-relaxed ${bgClass}">
@@ -1184,11 +1277,15 @@ function renderLumiMessages() {
           ${isLumi ? '✨ Lumi' : '👤 You'}
         </div>
         <div class="whitespace-pre-line font-medium">${parsedText}</div>
+        ${suggestionHtml}
       </div>
     </div>`;
   }).join('');
   
-  setTimeout(() => { container.scrollTop = container.scrollHeight; }, 50);
+  setTimeout(() => { 
+    lucide.createIcons();
+    container.scrollTop = container.scrollHeight; 
+  }, 50);
 }
 
 function parseMiniMarkdown(t) {
@@ -1234,6 +1331,20 @@ function getLumiContext() {
 - Focus Accomplished Today: ${focusToday.length} sessions completed (${totalFocusMins} minutes focus).`;
 }
 
+function confirmAiLogMood(index) {
+  const msg = lumiMessages[index];
+  if (!msg || !msg.suggestedMood || msg.moodLogged) return;
+
+  currentMood = msg.suggestedMood;
+  document.getElementById('note').value = msg.suggestedNote || '';
+  logMood(true); // Silent log
+
+  // Update UI state
+  msg.moodLogged = true;
+  localStorage.setItem('ssms7_lumi', JSON.stringify(lumiMessages));
+  renderLumiMessages();
+}
+
 async function triggerLumiMessage(customText = null) {
   const inputEl = document.getElementById('lumi-user-input');
   const text = (customText || inputEl.value).trim();
@@ -1256,27 +1367,36 @@ async function triggerLumiMessage(customText = null) {
   // Call Gemini Model
   let responseText = await sendMessageToLumi(text);
   
+  let suggestedMood = null;
+  let suggestedNote = null;
+
   // Process secret log tags generated by AI
   const moodMatch = responseText.match(/\[LOG_MOOD:\s*([a-z]+)\]/i);
   if (moodMatch) {
-      const detectedMood = moodMatch[1].toLowerCase();
-      if (moodInfo[detectedMood]) {
-          currentMood = detectedMood;
-          document.getElementById('note').value = text;
-          logMood(true); // Silent log
-          
-          responseText = responseText.replace(/\[LOG_MOOD:\s*[a-z]+\]/i, '').trim();
-          responseText += `\n\n*(Lumi logged your feeling as ${moodInfo[detectedMood].label} ${moodInfo[detectedMood].emoji} for you)*`;
-      } else {
-          responseText = responseText.replace(/\[LOG_MOOD:\s*[a-z]+\]/i, '').trim();
+      const isMotivationRequest = text.toLowerCase().includes('motivation');
+      
+      if (!isMotivationRequest) {
+          const detectedMood = moodMatch[1].toLowerCase();
+          if (moodInfo[detectedMood]) {
+              suggestedMood = detectedMood;
+              suggestedNote = text;
+          }
       }
+      responseText = responseText.replace(/\[LOG_MOOD:\s*[a-z]+\]/i, '').trim();
   }
 
   typingEl.classList.add('hidden');
   typingEl.classList.remove('flex');
   
   // Add Lumi Response
-  lumiMessages.push({ sender: 'lumi', text: responseText, ts: Date.now() });
+  let aiMsg = { sender: 'lumi', text: responseText, ts: Date.now() };
+  if (suggestedMood) {
+      aiMsg.suggestedMood = suggestedMood;
+      aiMsg.suggestedNote = suggestedNote;
+      aiMsg.moodLogged = false;
+  }
+
+  lumiMessages.push(aiMsg);
   localStorage.setItem('ssms7_lumi', JSON.stringify(lumiMessages));
   renderLumiMessages();
 }
@@ -1284,7 +1404,7 @@ async function triggerLumiMessage(customText = null) {
 async function sendMessageToLumi(userText) {
   const apiKey = ""; // provided at runtime environment
   const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
-  
+
   const recentContext = getLumiContext();
   const systemPrompt = `You are LUMI, a warm, empathetic, and highly human-like AI companion for stress management and daily chatting within the 'Mind Vault' app.
   The user is named ${profile?.name || 'Friend'}.
@@ -1294,14 +1414,16 @@ async function sendMessageToLumi(userText) {
   
   INSTRUCTIONS FOR YOUR RESPONSE:
   1. Act naturally and conversationally. If the user greets you ("hey", "how are you?", "what's up"), greet them back warmly as a friend. DO NOT mention their stats, streaks, or progress unless they explicitly ask for an analysis or progress update.
-  2. Directly fulfill requests. If the user asks for advice, give them a practical, thoughtful piece of advice immediately. If they ask for motivation, provide a short, strong motivation based on a REAL historical incident or a real person's true story of overcoming struggles (e.g., J.K. Rowling's rejections, Michael Jordan being cut from his team). Do NOT just give generic quotes or ask for permission. Just provide the story naturally.
+  2. Directly fulfill requests. If the user asks for advice, give them a practical, thoughtful piece of advice immediately. If they ask for motivation, provide a short, strong motivation based on a REAL historical incident or a famous person's true story of overcoming struggles. CRUCIAL: Pick a completely random, diverse, and unexpected historical figure or event every single time. Do NOT just give generic quotes or ask for permission. Just provide the story naturally.
   3. Keep your messages SHORT, SWEET, AND CONCISE (maximum 2-3 sentences).
   4. Vary your sentence structures and content. Do not sound repetitive or robotic. Provide different advice/motivation each time.
   5. Use markdown formatting (**bolding**) gently to emphasize key concepts.
   6. CRITICAL: MOOD LOGGING
-     If the user expresses a clear emotion (e.g., 'I feel sad', 'I am so stressed', 'feeling great today'), append exactly this string at the VERY END of your response text:
+     If the user expresses a mood, talks about their day being good/bad, or shares an emotional struggle (e.g., 'I feel sad', 'I am so stressed', 'i had a bad day today', 'feeling great today'), append exactly this string at the VERY END of your response text to OFFER to log it for them:
      [LOG_MOOD: mood_name]
-     Where 'mood_name' MUST be exactly one of these: happy, excited, calm, grateful, neutral, depressed, anxious, stressed, overwhelmed, frustrated, lonely, tired.`;
+     Where 'mood_name' MUST be exactly one of these: happy, excited, calm, grateful, neutral, depressed, anxious, stressed, overwhelmed, frustrated, lonely, tired.
+     Example: For "I had a bad day", you can append [LOG_MOOD: frustrated] or [LOG_MOOD: depressed].
+     DO NOT append [LOG_MOOD] if the user is just asking for motivation, advice, or a general question without sharing their own emotional state.`;
   
   // Package Chat History for Context (Merge sequential messages of the same role to prevent API error)
   let apiHistory = [];
@@ -1397,22 +1519,25 @@ function getLumiFallbackResponse(text) {
 
   // Motivation
   if (query.includes('motivat') || query.includes('inspire') || query.includes('encourage') || query.includes('boost')) {
-    const motivations = [
-      "When J.K. Rowling was writing Harry Potter, she was rejected by 12 different publishers while struggling as a single mother. Keep pushing forward, **" + name + "**; your breakthrough might be just around the corner.",
-      "Michael Jordan was famously cut from his high school varsity basketball team. He used that rejection as fuel to become the greatest. Use today's heavy moments to build your future strength.",
-      "Walt Disney was once fired from a newspaper because he 'lacked imagination and had no good ideas.' Remember that someone else's inability to see your worth doesn't define your potential.",
-      "Thomas Edison made 1,000 unsuccessful attempts at inventing the light bulb, calling them 'steps' instead of failures. Whatever you are facing right now is just a stepping stone, **" + name + "**.",
-      "Stephen King's first novel, Carrie, was rejected 30 times, and he even threw it in the trash before his wife rescued it. Don't throw away your efforts; keep believing in yourself!"
+    const famousMotivations = [
+      "Did you know Abraham Lincoln's early businesses failed and he lost multiple elections before becoming one of history's greatest leaders? Setbacks are just setups for a comeback, **" + name + "**.",
+      "When Vera Wang was designing her first dresses, she had no fashion design degree and started out of her apartment at age 40. It's never too late to start a new chapter.",
+      "Katy Perry's first record label dropped her, and her first album only sold 200 copies. She kept singing anyway. Your voice matters too, keep going!",
+      "Colonel Sanders didn't franchise KFC until he was 62 years old, using his $105 social security check to travel and pitch his recipe. Your timeline is exactly right for you.",
+      "Before creating Peanuts, Charles Schulz went totally unnoticed in high school, and his cartoons were rejected by his senior yearbook. Never let others dictate your worth, **" + name + "**.",
+      "After his first small role, Harrison Ford's studio executive told him he'd never make it in the movie business. Remember, nobody else holds the pen to your story.",
+      "Billionaire entrepreneur Sara Blakely didn't start Spanx until she was 27, after failing the LSAT twice and selling fax machines door-to-door for seven years. Every step teaches you something.",
+      "Dr. Seuss's first children's book was rejected by 27 different publishers before finally being accepted. Stay resilient, your breakthrough is waiting."
     ];
-    return motivations[Math.floor(Math.random() * motivations.length)];
+    return famousMotivations[Math.floor(Math.random() * famousMotivations.length)];
   }
 
   // Active Mood Keywords
   if (query.includes('anxious') || query.includes('panic') || query.includes('scared') || query.includes('worry')) {
     return `Take a slow, deep breath with me, **${name}**. Try our **Breathe tab** (4-7-8 mode) to settle your nervous system. You are safe here. [LOG_MOOD: anxious]`;
   }
-  if (query.includes('sad') || query.includes('depressed') || query.includes('lonely') || query.includes('hurt')) {
-    return `I'm here with you in this heavy moment. Be incredibly gentle with yourself. Can you do one tiny, loving thing for yourself today? [LOG_MOOD: depressed]`;
+  if (query.includes('sad') || query.includes('depressed') || query.includes('lonely') || query.includes('hurt') || query.includes('bad day') || query.includes('terrible day')) {
+    return `I'm so sorry today was such a struggle, **${name}**. Take a deep breath and remember that **you've made it through 100% of your bad days** so far; I'm right here if you need to vent. [LOG_MOOD: frustrated]`;
   }
   if (query.includes('stressed') || query.includes('overwhelmed') || query.includes('busy')) {
     return `It sounds like your plate is overflowing. Focus on just **one small thing**. Try a brief Pomodoro session under our **Focus** tab to ground your attention. [LOG_MOOD: stressed]`;
@@ -1520,7 +1645,15 @@ function renderHeatmap() {
     const d = new Date(); d.setDate(d.getDate() - i); d.setHours(0,0,0,0);
     days.push(d);
   }
-  const colorMap = { positive:'#10b981', neutral:'#64748b', difficult:'#f43f5e', tired:'#f59e0b' };
+  
+  const colors = {
+    great: '#10b981',    // Emerald 500
+    good: '#facc15',     // Yellow 400
+    neutral: '#94a3b8',  // Slate 400
+    hard: '#fb923c',     // Orange 400
+    stressed: '#f43f5e'  // Rose 500
+  };
+
   el.innerHTML = '<div class="flex items-end gap-2 h-20 pb-5">' + days.map(d => {
     const dayEntries = entries.filter(e => {
       const ed = new Date(e.ts); ed.setHours(0,0,0,0);
@@ -1530,12 +1663,25 @@ function renderHeatmap() {
     if (!dayEntries.length) {
       return `<div class="flex-1 flex flex-col items-center justify-end h-full gap-1.5"><div class="w-full min-h-[4px] rounded-full bg-slate-200 dark:bg-slate-800" style="height:10%"></div><div class="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase">${label}</div></div>`;
     }
-    const cats = dayEntries.map(e => moodInfo[e.mood]?.cat || 'neutral');
-    const order = ['difficult','tired','neutral','positive'];
-    const dom = order.find(c => cats.includes(c)) || 'neutral';
+    
+    let pos = 0;
+    let neg = 0;
+    dayEntries.forEach(e => {
+      const cat = moodInfo[e.mood]?.cat || 'neutral';
+      if (cat === 'positive') pos++;
+      else if (cat === 'difficult' || cat === 'tired') neg++;
+    });
+    
+    const diff = pos - neg;
+    let dom = 'neutral';
+    if ((pos > 0 && neg === 0) || diff >= 3) dom = 'great';
+    else if ((neg > 0 && pos === 0) || diff <= -3) dom = 'stressed';
+    else if (diff > 0) dom = 'good';
+    else if (diff < 0) dom = 'hard';
+
     const height = Math.min(100, dayEntries.length * 20 + 20);
     return `<div class="flex-1 flex flex-col items-center justify-end h-full gap-1.5">
-      <div class="w-full min-h-[4px] rounded-full transition-all duration-500" style="background:${colorMap[dom]}; height:${height}%; opacity:0.9;"></div>
+      <div class="w-full min-h-[4px] rounded-full transition-all duration-500" style="background:${colors[dom]}; height:${height}%; opacity:0.9;"></div>
       <div class="text-[9px] font-bold text-slate-600 dark:text-slate-400 uppercase">${label}</div>
     </div>`;
   }).join('') + '</div>';
@@ -1559,13 +1705,22 @@ function renderCalendar() {
     }
   });
 
-  const pr = { difficult:4, tired:3, neutral:2, positive:1 };
-  const dom = entries => {
-    const cats = entries.map(e => moodInfo[e.mood]?.cat || 'neutral');
-    return cats.sort((a,b) => (pr[b]||0) - (pr[a]||0))[0];
+  const getDayClass = (dayEntries) => {
+    let pos = 0;
+    let neg = 0;
+    dayEntries.forEach(e => {
+      const cat = moodInfo[e.mood]?.cat || 'neutral';
+      if (cat === 'positive') pos++;
+      else if (cat === 'difficult' || cat === 'tired') neg++;
+    });
+    
+    const diff = pos - neg;
+    if ((pos > 0 && neg === 0) || diff >= 3) return 'cd-happy';      // Green: Only pos or +3 pos margin
+    if ((neg > 0 && pos === 0) || diff <= -3) return 'cd-stressed';  // Red: Only neg or +3 neg margin
+    if (diff > 0) return 'cd-yellow';                                // Yellow: More pos than neg
+    if (diff < 0) return 'cd-orange';                                // Orange: More neg than pos
+    return 'cd-neutral';                                             // Equal or only neutral
   };
-
-  const catClass = { positive:'cd-happy', neutral:'cd-neutral', difficult:'cd-stressed', tired:'cd-tired' };
 
   let cells = '';
   for (let i = 0; i < firstDay; i++) cells += '<div class="cal-day cd-empty"></div>';
@@ -1576,8 +1731,7 @@ function renderCalendar() {
     if (isFuture) {
       cells += `<div class="cal-day cd-empty"></div>`;
     } else if (dayMap[d]) {
-      const domCat = dom(dayMap[d]);
-      const cls = catClass[domCat] || 'cd-none';
+      const cls = getDayClass(dayMap[d]);
       const count = dayMap[d].length;
       cells += `<div class="cal-day ${cls}${isToday ? ' cd-today' : ''} rounded-xl flex flex-col items-center justify-center text-xs font-bold cursor-pointer relative" 
         onclick="openCalDay(${calYear},${calMonth},${d})">
