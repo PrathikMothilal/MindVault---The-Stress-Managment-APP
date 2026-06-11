@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Silent Space — Mindfulness & Calm</title>
+  <title>Mind Vault — Mindfulness & Calm</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
@@ -113,7 +113,7 @@
       <div class="absolute -bottom-12 -right-12 w-24 h-24 bg-indigo-500/10 rounded-full filter blur-xl"></div>
       
       <div class="w-16 h-16 bg-brand-50/80 dark:bg-brand-900/30 rounded-2xl mx-auto flex items-center justify-center text-3xl mb-6 shadow-sm">🌸</div>
-      <h1 class="text-2xl font-bold mb-2 tracking-tight text-slate-900 dark:text-white">Silent Space</h1>
+      <h1 class="text-2xl font-bold mb-2 tracking-tight text-slate-900 dark:text-white">Mind Vault</h1>
       <p class="text-slate-500 dark:text-slate-400 text-sm mb-8 leading-relaxed">Your personal, soundless oasis. <br>No logins. Zero logs stored on servers.</p>
       
       <p class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-4">Select an Avatar</p>
@@ -132,7 +132,7 @@
              class="w-full bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3.5 mb-6 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all text-center font-medium placeholder:text-slate-400">
       
       <button onclick="saveProfile()" class="w-full bg-slate-900 dark:bg-brand-600 text-white font-semibold py-4 rounded-xl shadow-lg shadow-brand-500/10 hover:shadow-xl hover:-translate-y-0.5 transform active:scale-[0.98] transition-all">
-        Enter Silent Space
+        Enter Mind Vault
       </button>
     </div>
   </div>
@@ -293,7 +293,6 @@
         </div>
 
         <div class="flex gap-2 overflow-x-auto pb-3 scrollbar-none snap-x snap-mandatory shrink-0" id="lumi-quick-prompts">
-          <button onclick="sendQuickPrompt('I\'m feeling extremely overwhelmed right now.')" class="snap-start shrink-0 text-[9px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 bg-white/40 dark:bg-slate-800/40 border border-slate-200/40 dark:border-slate-800/50 px-3 py-1.5 rounded-xl hover:border-brand-500 transition-colors">Overwhelmed</button>
           <button onclick="sendQuickPrompt('Analyze my latest stats and progress.')" class="snap-start shrink-0 text-[9px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 bg-white/40 dark:bg-slate-800/40 border border-slate-200/40 dark:border-slate-800/50 px-3 py-1.5 rounded-xl hover:border-brand-500 transition-colors">My Progress</button>
           <button onclick="sendQuickPrompt('Can you suggest a fast stress relief exercise?')" class="snap-start shrink-0 text-[9px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 bg-white/40 dark:bg-slate-800/40 border border-slate-200/40 dark:border-slate-800/50 px-3 py-1.5 rounded-xl hover:border-brand-500 transition-colors">Fast Relief</button>
           <button onclick="sendQuickPrompt('Give me a short motivation boost.')" class="snap-start shrink-0 text-[9px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 bg-white/40 dark:bg-slate-800/40 border border-slate-200/40 dark:border-slate-800/50 px-3 py-1.5 rounded-xl hover:border-brand-500 transition-colors">Motivation</button>
@@ -499,7 +498,7 @@
         </div>
 
         <button onclick="resetAll()" class="w-full bg-rose-50/50 dark:bg-rose-950/20 text-rose-600 dark:text-rose-400 font-semibold py-3.5 rounded-xl border border-rose-200/40 dark:border-rose-900/20 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors text-xs">
-          Completely Reset Silent Space
+          Completely Reset Mind Vault
         </button>
       </div>
     </div>
@@ -826,9 +825,12 @@ function showTab(id, el) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// Routes direct to breath training tab from quick action buttons
 function goToBreathe() {
-  showTab('breathe', document.querySelectorAll('.nav-btn')[1]);
+  // Finds the 2nd button in the nav, which is the Breathe button
+  const navBtns = document.querySelectorAll('.nav-btn');
+  if(navBtns.length > 1) {
+    showTab('breathe', navBtns[1]);
+  }
 }
 
 // ─── Mood Log ────────────────────────────────────────────────
@@ -1155,7 +1157,7 @@ function initLumiChat() {
     const compName = profile?.name || 'Friend';
     lumiMessages.push({
       sender: 'lumi',
-      text: `Hi **${compName}**, I am **Lumi**, your personal AI mindfulness guide here in Silent Space. 🌸\n\nI am here to support you whenever you are holding anxieties, navigating a tough day, or wanting inspiration. You can share your feelings directly with me, and I'll log them for you. How can I lighten your weight today?`,
+      text: `Hi **${compName}**, I am **Lumi**, your personal AI companion here in Mind Vault. 🌸\n\nI am here to listen if you need to talk, vent, or find a little clarity. How are you feeling today?`,
       ts: Date.now()
     });
     localStorage.setItem('ssms7_lumi', JSON.stringify(lumiMessages));
@@ -1205,7 +1207,7 @@ function sendQuickPrompt(promptText) {
 
 function getLumiContext() {
   if (!entries.length) {
-    return "- No mood entries have been logged yet. Gently encourage them to try their first check-in.";
+    return "- No mood entries have been logged yet.";
   }
   const lastEntry = entries[entries.length - 1];
   const lastMoodLabel = moodInfo[lastEntry.mood]?.label || lastEntry.mood;
@@ -1225,10 +1227,10 @@ function getLumiContext() {
   const focusToday = focusSessions.filter(s => s.date === todayStr && s.completed);
   const totalFocusMins = focusToday.reduce((acc, curr) => acc + curr.mins, 0);
 
-  return `- Last Feeling Logged: ${lastMoodLabel} ${lastMoodEmoji} (Logged with comment: "${lastNote}")
+  return `- Last Feeling Logged: ${lastMoodLabel} ${lastMoodEmoji} (Comment: "${lastNote}")
 - Total Mood Records: ${entries.length} checks in total.
 - Weekly Emotion Distribution: ${counts.positive} Positive, ${counts.neutral} Neutral, ${counts.difficult} Difficult, ${counts.tired} Tired.
-- Mindful Day Streak: ${streak} days active in a row.
+- Day Streak: ${streak} days.
 - Focus Accomplished Today: ${focusToday.length} sessions completed (${totalFocusMins} minutes focus).`;
 }
 
@@ -1284,19 +1286,20 @@ async function sendMessageToLumi(userText) {
   const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
   
   const recentContext = getLumiContext();
-  const systemPrompt = `You are LUMI, a warm, extremely compassionate and supportive AI mindfulness companion for stress management.
+  const systemPrompt = `You are LUMI, a warm, empathetic, and highly human-like AI companion for stress management and daily chatting.
   The user is named ${profile?.name || 'Friend'}.
   
   CRITICAL REAL-TIME USER DATA FOR ANALYSIS:
   ${recentContext}
   
   INSTRUCTIONS FOR YOUR RESPONSE:
-  1. Analyze the provided stats and previous user messages to ensure accurate, context-aware answers. Never repeat the same generic script.
-  2. Keep your messages SHORT, SWEET, AND CONCISE (maximum 2-3 sentences where possible). Avoid large blocks of text.
-  3. Be highly informative yet soothing, like a wise human friend.
-  4. Use markdown formatting (**bolding**) to emphasize key concepts.
-  5. CRITICAL: MOOD LOGGING
-     Analyze the user's message. If they express a clear emotion (e.g., 'I feel sad', 'I am so stressed', 'feeling great'), you MUST log it.
+  1. Act like a true human friend. If the user asks casual questions ("How are you?", "What are you doing?"), answer naturally and casually without immediately pushing stress-management advice (e.g., "I'm doing wonderfully, just maintaining this quiet space for you. How is your day going?").
+  2. DO NOT force motivation. If the user seems stressed or asks for motivation, ask them FIRST if they would like a real-life motivational quote or just a gentle pep talk from you. Let the conversation flow naturally.
+  3. Keep your messages SHORT, SWEET, AND CONCISE (maximum 2-3 sentences). Avoid large blocks of text unless heavily requested.
+  4. Vary your sentence structures. Do not sound repetitive or robotic. Don't always use the exact same intro or outro.
+  5. Use markdown formatting (**bolding**) gently to emphasize key concepts or names.
+  6. CRITICAL: MOOD LOGGING
+     Analyze the user's message. If they express a clear emotion (e.g., 'I feel sad', 'I am so stressed', 'feeling great today'), you MUST log it.
      To log a feeling, append exactly this string at the VERY END of your response text:
      [LOG_MOOD: mood_name]
      Where 'mood_name' MUST be exactly one of these: happy, excited, calm, grateful, neutral, depressed, anxious, stressed, overwhelmed, frustrated, lonely, tired.
@@ -1356,12 +1359,24 @@ function getLumiFallbackResponse(text) {
   const moodEmoji = lastMood ? (moodInfo[lastMood]?.emoji || '💭') : '';
   const streak = calcStreak();
 
-  let intro = "";
-  if (moodLabel) {
-    intro = `Since you logged feeling **${moodLabel}** ${moodEmoji}, `;
+  // Casual Conversations
+  if (query === 'hi' || query === 'hello' || query === 'hey' || query.includes('hi lumi')) {
+    return `Hey there, **${name}**! I'm so glad you dropped by. How is your day going so far?`;
   }
-  if (streak > 1 && intro) {
-    intro += `and keeping up a solid **${streak}-day streak**, `;
+  if (query.includes('how are you') || query.includes('how are u')) {
+    return `I'm doing wonderfully, thank you for asking! Just keeping this quiet space warm and ready for you. How are you feeling right now?`;
+  }
+  if (query.includes('what are you doing') || query.includes('what are u doing')) {
+    return `Just organizing some digital thoughts and enjoying the calm atmosphere here. What's on your mind today, **${name}**?`;
+  }
+  if (query.includes('motivate') || query.includes('motivation')) {
+    return `I would love to help lift your spirits! Would you like to hear a verified quote from someone inspiring, or just a little pep talk from me?`;
+  }
+
+  // Active Mood Keywords
+  let intro = "";
+  if (moodLabel && !query.includes('how are') && !query.includes('what are')) {
+    intro = `Since you recently logged feeling **${moodLabel}** ${moodEmoji}, `;
   }
 
   if (query.includes('anxious') || query.includes('panic') || query.includes('scared') || query.includes('worry')) {
@@ -1373,9 +1388,10 @@ function getLumiFallbackResponse(text) {
   if (query.includes('stressed') || query.includes('overwhelmed') || query.includes('busy')) {
     return `${intro}it sounds like your plate is overflowing. Focus on just **one small thing**. Try a brief Pomodoro session under our **Focus** tab to ground your attention. [LOG_MOOD: stressed]`;
   }
-  if (query.includes('happy') || query.includes('excited') || query.includes('great')) {
+  if (query.includes('happy') || query.includes('excited') || query.includes('great') || query.includes('good')) {
     return `That is wonderful to hear, **${name}**! Take a moment to truly soak in this good energy. [LOG_MOOD: happy]`;
   }
+  
   if (query.includes('progress') || query.includes('stats') || query.includes('analyze')) {
     const focusToday = focusSessions.filter(s => s.completed).length;
     return `Your mindful summary is looking strong, **${name}**! You have **${entries.length} total logs**, a active **${streak}-day streak**, and **${focusToday} focus sessions** under your belt. Keep going!`;
@@ -1385,7 +1401,14 @@ function getLumiFallbackResponse(text) {
     return `${intro}I want to remind you that your limits represent security, not failure. Give yourself permission to do less today. I am right here.`;
   }
   
-  return `Hi **${name}**! ${intro || 'I\'m here as your AI companion. '}Tell me what's on your mind, or let me know if you want a quick stress-relief challenge!`;
+  // Dynamic random fallback for unknown queries
+  const casualResponses = [
+    `I'm always here to listen, **${name}**. Tell me more about what's on your mind.`,
+    `That's interesting! How does that make you feel?`,
+    `I'm completely ears. Would you like some advice on that, or do you just want to vent?`,
+    `I understand. Take your time, I'm right here with you.`
+  ];
+  return casualResponses[Math.floor(Math.random() * casualResponses.length)];
 }
 
 function clearLumiChat() {
