@@ -138,7 +138,7 @@
   </div>
 
   <!-- MAIN APP -->
-  <div id="main-app" style="display:none;" class="w-full max-w-lg w-full px-4 pt-6 pb-28">
+  <div id="main-app" style="display:none;" class="w-full max-w-lg px-4 pt-6 pb-28">
 
     <!-- TOP CONTROL PANEL -->
     <header class="glass-panel shadow-premium dark:shadow-premium-dark rounded-3xl p-6 mb-6 flex flex-col gap-5 relative overflow-hidden">
@@ -146,7 +146,7 @@
       <div class="flex justify-between items-center relative z-10">
         <div>
           <h2 class="text-xl font-bold tracking-tight text-slate-900 dark:text-white" id="hero-greeting">Hi, Friend</h2>
-          <p class="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider mt-1" id="current-date-display">Silent Journey</p>
+          <p class="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider mt-1" id="current-date-display">Mindful Journey</p>
         </div>
         <div class="flex items-center gap-3">
           <button id="theme-toggle" onclick="toggleTheme()" class="w-10 h-10 rounded-xl bg-slate-100/50 dark:bg-slate-800/40 flex items-center justify-center text-slate-500 hover:bg-slate-200/50 dark:hover:bg-slate-700/40 transition-colors">
@@ -178,7 +178,7 @@
     <div class="section active" id="tab-checkin">
       <div class="flex items-center gap-2 px-4 py-3 bg-brand-500/10 text-brand-800 dark:text-brand-300 rounded-2xl mb-6 text-xs font-semibold border border-brand-500/10">
         <div class="w-1.5 h-1.5 rounded-full bg-brand-500 animate-ping"></div>
-        Private & soundless space. Tap how you feel.
+        Private & secure space. Tap how you feel.
       </div>
 
       <div class="glass-panel shadow-premium dark:shadow-premium-dark rounded-3xl p-6 mb-6 relative overflow-hidden group">
@@ -1396,6 +1396,10 @@ function getLumiFallbackResponse(text) {
     const focusToday = focusSessions.filter(s => s.completed).length;
     return `Your mindful summary is looking strong, **${name}**! You have **${entries.length} total logs**, a active **${streak}-day streak**, and **${focusToday} focus sessions** under your belt. Keep going!`;
   }
+
+  if (query.includes('app') || query.includes('mind vault') || query.includes('help')) {
+    return `I can help you navigate Mind Vault! Use **Log** to record feelings, **Breathe** to calm down biologically, **Focus** to run study intervals, and **Stats** to view your emotional patterns.`;
+  }
   
   if (moodLabel && (DIFFICULT_MOODS.includes(lastMood) || lastMood === 'tired')) {
     return `${intro}I want to remind you that your limits represent security, not failure. Give yourself permission to do less today. I am right here.`;
@@ -1443,9 +1447,9 @@ function renderReport() {
   } else if ((cats.tired||0) >= 3) {
     ins.textContent = "Your timeline is highlighting frequent fatigue logs. Protect your rest cycles tonight 🌙";
   } else if ((cats.positive||0) >= (cats.difficult||0) + (cats.tired||0)) {
-    ins.textContent = "Your silent timeline reflects balanced positive space this week. Excellent! 🌟";
+    ins.textContent = "Your Mind Vault timeline reflects balanced positive space this week. Excellent! 🌟";
   } else {
-    ins.textContent = "Your logs show mixed feelings. This is fully natural. Silent Space remains with you 💜";
+    ins.textContent = "Your logs show mixed feelings. This is fully natural. Mind Vault remains with you 💜";
   }
 
   if (moodChart) { moodChart.destroy(); moodChart = null; }
