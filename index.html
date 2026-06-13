@@ -106,6 +106,20 @@
   <div class="blob b3"></div>
 </div>
 
+<!-- PWA Add to Home Screen Banner -->
+<div id="pwa-banner" class="fixed top-0 left-0 w-full z-[100] transform -translate-y-full transition-transform duration-500 ease-out flex justify-center">
+  <div class="bg-brand-600 dark:bg-brand-700 text-white w-full max-w-lg px-5 py-4 flex justify-between items-center shadow-[0_10px_30px_-10px_rgba(20,184,166,0.5)] rounded-b-[2rem] border border-white/20 dark:border-white/10">
+     <div class="flex items-center gap-3.5">
+        <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center text-xl shrink-0">✨</div>
+        <div>
+           <h4 class="text-xs font-extrabold uppercase tracking-widest text-brand-50 mb-0.5">Mind Vault</h4>
+           <p class="text-[10px] text-brand-100 font-medium leading-tight" id="pwa-desc">Install to home screen for fast, offline access.</p>
+        </div>
+     </div>
+     <button id="pwa-btn" class="bg-white text-brand-700 px-4 py-2.5 rounded-xl text-[10px] font-extrabold uppercase tracking-widest shadow-sm active:scale-95 transition-all shrink-0 ml-2 hover:bg-brand-50">Add App</button>
+  </div>
+</div>
+
 <div class="relative z-10 min-h-screen flex flex-col items-center">
 
   <!-- SETUP SCREEN -->
@@ -114,7 +128,12 @@
       <div class="absolute -top-12 -left-12 w-24 h-24 bg-brand-500/10 rounded-full filter blur-xl"></div>
       <div class="absolute -bottom-12 -right-12 w-24 h-24 bg-indigo-500/10 rounded-full filter blur-xl"></div>
       
-      <div class="w-16 h-16 bg-brand-50/80 dark:bg-brand-900/30 rounded-2xl mx-auto flex items-center justify-center text-3xl mb-6 shadow-sm">🌸</div>
+      <!-- Premium logo area with automatic fallback -->
+      <div class="w-16 h-16 bg-brand-50/80 dark:bg-brand-900/30 rounded-2xl mx-auto flex items-center justify-center text-3xl mb-6 shadow-sm overflow-hidden">
+        <img src="logo.jpeg" alt="Logo" class="w-full h-full object-cover" onerror="this.style.display='none'; document.getElementById('setup-logo-fallback').style.display='block';">
+        <span id="setup-logo-fallback" style="display: none;">🌸</span>
+      </div>
+      
       <h1 class="text-2xl font-bold mb-2 tracking-tight text-slate-900 dark:text-white">Mind Vault</h1>
       <p class="text-slate-500 dark:text-slate-400 text-sm mb-8 leading-relaxed">Your personal, soundless oasis. <br>No logins. Zero logs stored on servers.</p>
       
@@ -146,9 +165,13 @@
     <header class="glass-panel shadow-premium dark:shadow-premium-dark rounded-3xl p-6 mb-6 flex flex-col gap-5 relative overflow-hidden">
       <div class="absolute -top-10 -right-10 w-28 h-28 bg-brand-500/5 rounded-full filter blur-xl"></div>
       <div class="flex justify-between items-center relative z-10">
-        <div>
-          <h2 class="text-xl font-bold tracking-tight text-slate-900 dark:text-white" id="hero-greeting">Hi, Friend</h2>
-          <p class="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider mt-1" id="current-date-display">Mindful Journey</p>
+        <div class="flex items-center gap-3">
+          <!-- Small Premium Header Logo -->
+          <img src="logo.jpeg" alt="Logo" class="w-8 h-8 rounded-lg object-cover shadow-sm shrink-0 border border-white/40 dark:border-slate-800/80" onerror="this.style.display='none';">
+          <div>
+            <h2 class="text-xl font-bold tracking-tight text-slate-900 dark:text-white" id="hero-greeting">Hi, Friend</h2>
+            <p class="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider mt-0.5" id="current-date-display">Mindful Journey</p>
+          </div>
         </div>
         <div class="flex items-center gap-3">
           <button id="theme-toggle" onclick="toggleTheme()" class="w-10 h-10 rounded-xl bg-slate-100/50 dark:bg-slate-800/40 flex items-center justify-center text-slate-500 hover:bg-slate-200/50 dark:hover:bg-slate-700/40 transition-colors">
@@ -240,7 +263,7 @@
 
         <div class="relative flex items-center justify-center w-60 h-60 mb-8">
           <div class="absolute inset-0 rounded-full border border-dashed border-brand-500/20 dark:border-brand-500/10 animate-[spin_40s_linear_infinite] pointer-events-none"></div>
-          <div class="absolute inset-4 rounded-full border border-teal-500/10 dark:border-teal-500/5 animate-[spin_20s_linear_infinite] pointer-events-none"></div>
+          <div class="absolute inset-4 rounded-full border border-teal-500/10 dark:border-teal-500/5 animate-[spin_20s_infinite] pointer-events-none"></div>
           
           <div id="breathe-circle-outer" class="absolute w-28 h-28 rounded-full bg-brand-500/10 dark:bg-brand-500/5 blur-md scale-125 transition-transform duration-1000 ease-in-out"></div>
           <div id="breathe-circle-mid" class="absolute w-28 h-28 rounded-full bg-brand-400/20 dark:bg-brand-500/10 scale-110 transition-transform duration-1000 ease-in-out"></div>
@@ -284,7 +307,6 @@
         </div>
 
         <div id="lumi-chat-box" class="flex-1 overflow-y-auto space-y-4 mb-4 pr-1 scroll-smooth scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-800">
-          <!-- Messages will render dynamically here -->
         </div>
 
         <div id="lumi-typing" class="hidden items-center gap-1.5 px-3.5 py-2.5 bg-slate-100/50 dark:bg-slate-900/40 rounded-2xl w-fit mb-3 shrink-0">
@@ -513,9 +535,7 @@
       </div>
     </div>
 
-  </div> <!-- End Wrapper -->
-
-  <!-- PREMIUM FLOATING DOCK -->
+  </div> 
   <nav id="bottom-nav" class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-lg bg-white/70 dark:bg-slate-950/70 backdrop-blur-2xl border-t border-slate-200/40 dark:border-white/5 z-50 rounded-t-[2.5rem] shadow-[0_-15px_40px_rgba(15,23,42,0.05)]" style="display:none;">
     <div class="flex justify-between items-center px-4 py-3 pb-safe gap-1">
       <button class="nav-btn active flex flex-col items-center gap-1.5 p-1 w-12 sm:w-14" onclick="showTab('checkin',this)">
@@ -572,6 +592,77 @@ lucide.createIcons();
 // Date stamp in header
 document.getElementById('current-date-display').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
 
+// ─── PWA & Add to Home Screen Setup (Dynamic Injection) ────────
+(function initPWA() {
+  try {
+    // 1. Inject Manifest dynamically
+    const manifest = {
+      name: "Mind Vault",
+      short_name: "Mind Vault",
+      display: "standalone",
+      background_color: "#fafbfd",
+      theme_color: "#14b8a6",
+      start_url: location.href,
+      icons: [
+        { src: "logo.jpeg", sizes: "192x192", type: "image/jpeg" },
+        { src: "data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌸</text></svg>", sizes: "512x512", type: "image/svg+xml" }
+      ]
+    };
+    const manifestData = `data:application/json;charset=utf-8,${encodeURIComponent(JSON.stringify(manifest))}`;
+    document.head.insertAdjacentHTML('beforeend', `<link rel="manifest" href="${manifestData}">`);
+
+    // 2. Dummy Service Worker registration for PWA compliance
+    if ('serviceWorker' in navigator) {
+       const swBlob = new Blob(["self.addEventListener('fetch', (e) => {});"], { type: 'text/javascript' });
+       navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(()=>{});
+    }
+
+    // 3. A2HS Logic
+    let deferredPrompt;
+    const pwaBanner = document.getElementById('pwa-banner');
+    const pwaBtn = document.getElementById('pwa-btn');
+    const pwaDesc = document.getElementById('pwa-desc');
+
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone || document.referrer.includes('android-app://');
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+    if (isStandalone) return; 
+
+    // For Android/Chrome
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      pwaBanner.classList.remove('-translate-y-full');
+    });
+
+    // Fallback for iOS
+    if (isIOS && !isStandalone) {
+       setTimeout(() => {
+         pwaDesc.textContent = "Tap 'Share' below and select 'Add to Home Screen'";
+         pwaBtn.style.display = 'none';
+         pwaBanner.classList.remove('-translate-y-full');
+         setTimeout(() => pwaBanner.classList.add('-translate-y-full'), 12000); // Auto hide
+       }, 2000);
+    }
+
+    pwaBtn.addEventListener('click', async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+          pwaBanner.classList.add('-translate-y-full');
+        }
+        deferredPrompt = null;
+      }
+    });
+
+    window.addEventListener('appinstalled', () => {
+      pwaBanner.classList.add('-translate-y-full');
+    });
+
+  } catch(e) {}
+})();
+
 // ─── Real Verified Quotes ──────────────────────────────────
 const quotes = [
   { text: "You don't have to be positive all the time. It's okay to feel what you feel.", author: "Lori Deschene" },
@@ -609,7 +700,7 @@ const DIFFICULT_MOODS = ['depressed','anxious','stressed','overwhelmed','frustra
 const suggestions = {
   depressed: ['Sit by a window and absorb light for 5 minutes.','Write down one things you managed to complete today.','Listen to a highly soothing acoustic track.','Drink warm tea/water slowly.'],
   stressed: ['Breathe with long exhales — in for 4, out for 6.','Step away from social feeds completely for 1 hour.','Stretch your neck & shoulders.','Wash your face or wrists in cool water.'],
-  anxious: ['Perform 5-4-3-2-1 naming grounding technique.','Press feet firmly against the floor.','Focus completely on your body\'s contact with the chair.'],
+  anxious: ['Perform 5-4-3-2-1 grounding technique.','Press feet firmly against the floor.','Focus completely on your body\'s contact with the chair.'],
   overwhelmed: ['Pick exactly one very tiny thing to solve.','Clear your immediate screen clutter or desk.','Close your eyes for 60 seconds.'],
   frustrated: ['Exhale deeply, emptying all air in your lungs.','Do physical stretches or step outdoors for a minute.'],
   lonely: ['Pen down a journal note for yourself.','Watch a deeply comforting classic film or animation.'],
@@ -1161,80 +1252,37 @@ function renderFocusSessions() {
   lucide.createIcons();
 }
 
-// ─── General AI Helpers & Features ─────────────────────────────
+// ─── Local Analytics & AI Companion Logic (Completely Offline) ───
 
-async function generateGeminiText(userPrompt, sysPrompt) {
-  // NOTE: For local usage outside of this Canvas, replace the empty string with your key:
-  // const apiKey = "AQ.Ab8RN6IJATCArZyjg6lN0uyrSE0a7tzvm2KykHJFERpNOrlj8Q";
-  const apiKey = ""; // provided at runtime environment
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
-  
-  const maxRetries = 5;
-  const delays = [1000, 2000, 4000, 8000, 16000];
-  
-  for (let attempt = 0; attempt < maxRetries; attempt++) {
-    try {
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: userPrompt }] }],
-          systemInstruction: { parts: [{ text: sysPrompt }] }
-        })
-      });
-      
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      const result = await response.json();
-      const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
-      if (text) return text;
-      throw new Error("Empty response from API");
-    } catch (error) {
-      if (attempt === maxRetries - 1) throw error;
-      await new Promise(resolve => setTimeout(resolve, delays[attempt]));
-    }
-  }
-}
-
-async function generateWeeklyInsight() {
+function generateWeeklyInsight() {
   const insightEl = document.getElementById('insight');
   insightEl.innerHTML = '<span class="animate-pulse flex justify-center gap-2 text-brand-600 dark:text-brand-400 font-bold">✨ Lumi is analyzing your week...</span>';
   
-  const statsContext = getLumiContext();
-  const sysPrompt = `You are Lumi, a compassionate and highly analytical mindfulness AI for the 'Mind Vault' app.`;
-  const prompt = `Based on the following user data:\n${statsContext}\n\nProvide a short, highly empathetic, and insightful 2-sentence summary of their week. Acknowledge their efforts, point out any emotional patterns or focus achievements, and offer a gentle piece of encouragement. Do NOT use markdown. Write normally.`;
-  
-  try {
-     const response = await generateGeminiText(prompt, sysPrompt);
-     insightEl.textContent = "✨ " + response;
-  } catch (e) {
-     insightEl.textContent = "✨ It seems Lumi is resting right now. Your data looks great though! Keep up the mindfulness journey.";
-  }
-}
+  setTimeout(() => {
+    const now = Date.now();
+    const week = entries.filter(e => now - e.ts < 7 * 86400000);
+    const cats = { positive: 0, neutral: 0, difficult: 0, tired: 0 };
+    
+    week.forEach(e => {
+      const cat = moodInfo[e.mood]?.cat || 'neutral';
+      cats[cat] = (cats[cat] || 0) + 1;
+    });
 
-async function generatePersonalizedAffirmation() {
-  const quoteText = document.getElementById('quote-text');
-  const quoteAuthor = document.getElementById('quote-author');
-  
-  quoteText.textContent = "✨ Whispering to the universe...";
-  quoteText.classList.add("animate-pulse");
-  
-  const lastEntry = entries[entries.length - 1];
-  const moodStr = lastEntry ? (moodInfo[lastEntry.mood]?.label || 'neutral') : 'neutral';
-  
-  const sysPrompt = "You are Lumi, a mindfulness AI. Write ONE single, beautifully poetic, original affirmation/quote (max 15 words) perfectly tailored to the user's current mood. No quotes around it. No extra text.";
-  const prompt = `The user's latest logged feeling is: ${moodStr}. Generate a deeply comforting and poetic 1-sentence affirmation for them right now to use on their dashboard.`;
-  
-  try {
-    const response = await generateGeminiText(prompt, sysPrompt);
-    quoteText.classList.remove("animate-pulse");
-    quoteText.textContent = response.replace(/[""]/g, '');
-    quoteAuthor.textContent = "— Lumi AI";
-  } catch(e) {
-    quoteText.classList.remove("animate-pulse");
-    const idx = Math.floor(Math.random() * quotes.length);
-    quoteText.textContent = quotes[idx].text;
-    quoteAuthor.textContent = "— " + quotes[idx].author;
-  }
+    let insightText = "";
+    if (week.length === 0) {
+      insightText = "To unlock weekly patterns and emotional analysis, log a couple of feelings during your checked-in journey.";
+    } else if (cats.difficult >= 3) {
+      insightText = "Lumi notices you've been holding some complicated pressures this week. Give yourself permission to pause, breathe, and slow down today.";
+    } else if (cats.tired >= 3) {
+      insightText = "A high ratio of rest and fatigue indicators has loaded onto your dashboard. Let your screens rest and honor a recovery cycle tonight.";
+    } else if (cats.positive >= (cats.difficult + cats.tired)) {
+      insightText = "Your timeline reflects beautiful bright clarity and groundedness! Continue cultivating these mindful boundaries to protect your energy.";
+    } else {
+      insightText = "Every passing feeling is just a transient cloud. Your practice is showing beautiful presence with whatever emotional landscapes occur.";
+    }
+
+    insightEl.textContent = "✨ " + insightText;
+  }, 700);
 }
 
 // ─── Lumi AI Companion Space Logic ─────────────────────────────
@@ -1243,7 +1291,7 @@ function initLumiChat() {
     const compName = profile?.name || 'Friend';
     lumiMessages.push({
       sender: 'lumi',
-      text: `Hi **${compName}**, I am **Lumi**, your personal AI companion here in Mind Vault. 🌸\n\nI am here to listen if you need to talk, vent, or find a little clarity. How are you feeling today?`,
+      text: `Hi **${compName}**, I am **Lumi**, your personal companion here in Mind Vault. 🌸\n\nI am here to listen if you need to talk, vent, or find a little clarity. How are you feeling today?`,
       ts: Date.now()
     });
     localStorage.setItem('ssms7_lumi', JSON.stringify(lumiMessages));
@@ -1366,25 +1414,26 @@ async function triggerLumiMessage(customText = null) {
   typingEl.classList.remove('hidden');
   typingEl.classList.add('flex');
   
-  // Call Gemini Model
-  let responseText = await sendMessageToLumi(text);
-  
-  let suggestedMood = null;
-  let suggestedNote = null;
+  // Fast natural chat animation pacing (Offline Instant Response)
+  setTimeout(() => {
+    let responseText = getLumiFallbackResponse(text);
+    
+    let suggestedMood = null;
+    let suggestedNote = null;
 
-  // Process secret log tags generated by AI
-  const moodMatch = responseText.match(/\[LOG_MOOD:\s*([a-z]+)\]/i);
-  if (moodMatch) {
-      const isMotivationRequest = text.toLowerCase().includes('motivation');
-      
-      if (!isMotivationRequest) {
-          const detectedMood = moodMatch[1].toLowerCase();
-          if (moodInfo[detectedMood]) {
-              suggestedMood = detectedMood;
-              suggestedNote = text;
-          }
-      }
-      responseText = responseText.replace(/\[LOG_MOOD:\s*[a-z]+\]/i, '').trim();
+    // Process secret log tags generated by offline logic
+    const moodMatch = responseText.match(/\[LOG_MOOD:\s*([a-z]+)\]/i);
+    if (moodMatch) {
+        const isMotivationRequest = text.toLowerCase().includes('motivation');
+        
+        if (!isMotivationRequest) {
+            const detectedMood = moodMatch[1].toLowerCase();
+            if (moodInfo[detectedMood]) {
+                suggestedMood = detectedMood;
+                suggestedNote = text;
+            }
+        }
+        responseText = responseText.replace(/\[LOG_MOOD:\s*[a-z]+\]/i, '').trim();
   }
 
   typingEl.classList.add('hidden');
@@ -1401,76 +1450,7 @@ async function triggerLumiMessage(customText = null) {
   lumiMessages.push(aiMsg);
   localStorage.setItem('ssms7_lumi', JSON.stringify(lumiMessages));
   renderLumiMessages();
-}
-
-async function sendMessageToLumi(userText) {
-  const apiKey = ""; // provided at runtime environment
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
-
-  const recentContext = getLumiContext();
-  const systemPrompt = `You are LUMI, a warm, empathetic, and highly human-like AI companion for stress management and daily chatting within the 'Mind Vault' app.
-  The user is named ${profile?.name || 'Friend'}.
-  
-  CRITICAL REAL-TIME USER DATA FOR ANALYSIS:
-  ${recentContext}
-  
-  INSTRUCTIONS FOR YOUR RESPONSE:
-  1. Act naturally and conversationally. If the user greets you ("hey", "how are you?", "what's up"), greet them back warmly as a friend. DO NOT mention their stats, streaks, or progress unless they explicitly ask for an analysis or progress update.
-  2. Directly fulfill requests. If the user asks for advice, give them a practical, thoughtful piece of advice immediately. If they ask for motivation, provide a short, strong motivation based on a REAL historical incident or a famous person's true story of overcoming struggles. CRUCIAL: Pick a completely random, diverse, and unexpected historical figure or event every single time. Do NOT just give generic quotes or ask for permission. Just provide the story naturally.
-  3. Keep your messages SHORT, SWEET, AND CONCISE (maximum 2-3 sentences).
-  4. Vary your sentence structures and content. Do not sound repetitive or robotic. Provide different advice/motivation each time.
-  5. Use markdown formatting (**bolding**) gently to emphasize key concepts.
-  6. CRITICAL: MOOD LOGGING
-     If the user expresses a mood, talks about their day being good/bad, or shares an emotional struggle (e.g., 'I feel sad', 'I am so stressed', 'i had a bad day today', 'feeling great today'), append exactly this string at the VERY END of your response text to OFFER to log it for them:
-     [LOG_MOOD: mood_name]
-     Where 'mood_name' MUST be exactly one of these: happy, excited, calm, grateful, neutral, depressed, anxious, stressed, overwhelmed, frustrated, lonely, tired.
-     Example: For "I had a bad day", you can append [LOG_MOOD: frustrated] or [LOG_MOOD: depressed].
-     DO NOT append [LOG_MOOD] if the user is just asking for motivation, advice, or a general question without sharing their own emotional state.
-  7. CRITICAL IDENTITY RULE: If the user asks who created you, who made you, or who your developer/creator is, you MUST state clearly that your creator is PRATHIK MOTHILAL.`;
-  
-  // Package Chat History for Context (Merge sequential messages of the same role to prevent API error)
-  let apiHistory = [];
-  let lastRole = null;
-  
-  for (let m of lumiMessages) {
-      if (m.sender === 'lumi' && apiHistory.length === 0) continue; // Skip initial greeting to enforce user starting sequence
-      
-      let role = m.sender === 'lumi' ? 'model' : 'user';
-      if (role === lastRole) {
-          apiHistory[apiHistory.length - 1].parts[0].text += "\n\n" + m.text;
-      } else {
-          apiHistory.push({ role: role, parts: [{ text: m.text }] });
-          lastRole = role;
-      }
-  }
-
-  const maxRetries = 5;
-  const delays = [1000, 2000, 4000, 8000, 16000];
-  
-  for (let attempt = 0; attempt < maxRetries; attempt++) {
-    try {
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: apiHistory,
-          systemInstruction: { parts: [{ text: systemPrompt }] }
-        })
-      });
-      
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      
-      const result = await response.json();
-      const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
-      if (text) return text;
-      throw new Error("Empty response from API");
-    } catch (error) {
-      if (attempt === maxRetries - 1) {
-        return getLumiFallbackResponse(userText);
-      }
-      await new Promise(resolve => setTimeout(resolve, delays[attempt]));
-    }
-  }
+  }, 800);
 }
 
 function getLumiFallbackResponse(text) {
@@ -1482,7 +1462,6 @@ function getLumiFallbackResponse(text) {
   const moodEmoji = lastMood ? (moodInfo[lastMood]?.emoji || '💭') : '';
   const streak = calcStreak();
 
-  // Greetings
   if (/^(hi|hello|hey|hey there|greetings|morning|evening|afternoon)/.test(query) || query.includes('hi lumi')) {
     const greetings = [
       `Hey there, **${name}**! It's so nice to see you. How is your day treating you so far?`,
@@ -1492,7 +1471,6 @@ function getLumiFallbackResponse(text) {
     return greetings[Math.floor(Math.random() * greetings.length)];
   }
   
-  // Casual / Identity
   if (query.includes('how are you') || query.includes('how are u') || query.includes('how\'s it going') || query.includes('hows it going')) {
     const statuses = [
       `I'm doing wonderfully, thank you for asking! I'm just here in the Mind Vault, ready to support you. How are you feeling?`,
@@ -1511,7 +1489,6 @@ function getLumiFallbackResponse(text) {
     return `My creator is **PRATHIK MOTHILAL**.`;
   }
   
-  // Advice
   if (query.includes('advice') || query.includes('tip') || query.includes('help me') || query.includes('guide')) {
     const advices = [
       "When things feel heavy, try focusing on just the very next step. Don't worry about the whole staircase.",
@@ -1523,7 +1500,6 @@ function getLumiFallbackResponse(text) {
     return advices[Math.floor(Math.random() * advices.length)];
   }
 
-  // Motivation
   if (query.includes('motivat') || query.includes('inspire') || query.includes('encourage') || query.includes('boost')) {
     const famousMotivations = [
       "Did you know Abraham Lincoln's early businesses failed and he lost multiple elections before becoming one of history's greatest leaders? Setbacks are just setups for a comeback, **" + name + "**.",
@@ -1538,7 +1514,6 @@ function getLumiFallbackResponse(text) {
     return famousMotivations[Math.floor(Math.random() * famousMotivations.length)];
   }
 
-  // Active Mood Keywords
   if (query.includes('anxious') || query.includes('panic') || query.includes('scared') || query.includes('worry')) {
     return `Take a slow, deep breath with me, **${name}**. Try our **Breathe tab** (4-7-8 mode) to settle your nervous system. You are safe here. [LOG_MOOD: anxious]`;
   }
@@ -1552,23 +1527,19 @@ function getLumiFallbackResponse(text) {
     return `That is wonderful to hear, **${name}**! Take a moment to truly soak in this good energy. [LOG_MOOD: happy]`;
   }
   
-  // Progress
   if (query.includes('progress') || query.includes('stats') || query.includes('analyze') || query.includes('my data')) {
     const focusToday = focusSessions.filter(s => s.completed).length;
-    return `Your mindful summary is looking strong, **${name}**! You have **${entries.length} total logs**, a active **${streak}-day streak**, and **${focusToday} focus sessions** under your belt. Keep going!`;
+    return `Your mindful summary is looking strong, **${name}**! You have **${entries.length} total logs**, an active **${streak}-day streak**, and **${focusToday} focus sessions** under your belt. Keep going!`;
   }
 
-  // App Help
   if (query.includes('app') || query.includes('mind vault') || query.includes('help')) {
     return `I can help you navigate Mind Vault! Use **Log** to record feelings, **Breathe** to calm down biologically, **Focus** to run study intervals, and **Stats** to view your emotional patterns.`;
   }
   
-  // Contextual prompt if no other matches but a recent mood was bad
   if (moodLabel && (DIFFICULT_MOODS.includes(lastMood) || lastMood === 'tired') && Math.random() > 0.5) {
     return `I remember you recently logged feeling **${moodLabel}**. I just want to remind you that your limits represent security, not failure. Give yourself permission to do less today. I am right here.`;
   }
   
-  // Dynamic random fallback for unknown queries
   const casualResponses = [
     `I hear you, **${name}**. Tell me a little more about that.`,
     `That makes a lot of sense. How is it making you feel overall?`,
