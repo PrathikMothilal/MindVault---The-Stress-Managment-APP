@@ -1164,6 +1164,8 @@ function renderFocusSessions() {
 // ─── General AI Helpers & Features ─────────────────────────────
 
 async function generateGeminiText(userPrompt, sysPrompt) {
+  // NOTE: For local usage outside of this Canvas, replace the empty string with your key:
+  // const apiKey = "AQ.Ab8RN6IJATCArZyjg6lN0uyrSE0a7tzvm2KykHJFERpNOrlj8Q";
   const apiKey = ""; // provided at runtime environment
   const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
   
@@ -1423,7 +1425,8 @@ async function sendMessageToLumi(userText) {
      [LOG_MOOD: mood_name]
      Where 'mood_name' MUST be exactly one of these: happy, excited, calm, grateful, neutral, depressed, anxious, stressed, overwhelmed, frustrated, lonely, tired.
      Example: For "I had a bad day", you can append [LOG_MOOD: frustrated] or [LOG_MOOD: depressed].
-     DO NOT append [LOG_MOOD] if the user is just asking for motivation, advice, or a general question without sharing their own emotional state.`;
+     DO NOT append [LOG_MOOD] if the user is just asking for motivation, advice, or a general question without sharing their own emotional state.
+  7. CRITICAL IDENTITY RULE: If the user asks who created you, who made you, or who your developer/creator is, you MUST state clearly that your creator is PRATHIK MOTHILAL.`;
   
   // Package Chat History for Context (Merge sequential messages of the same role to prevent API error)
   let apiHistory = [];
@@ -1503,6 +1506,9 @@ function getLumiFallbackResponse(text) {
   }
   if (query.includes('who are you')) {
     return `I'm Lumi, your personal AI companion! I'm here to listen, offer advice, or just chat whenever you need a friendly space.`;
+  }
+  if (query.includes('who created you') || query.includes('who made you') || query.includes('who is your creator') || query.includes('who developed you')) {
+    return `My creator is **PRATHIK MOTHILAL**.`;
   }
   
   // Advice
